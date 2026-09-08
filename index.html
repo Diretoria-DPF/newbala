@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulador Farmacotécnico | Liga de Farmácia</title>
+  <link rel="stylesheet" href="../assets/css/global.css">
+  <link rel="stylesheet" href="../assets/css/layout.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <link rel="stylesheet" href="simulador.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="navbar">
+      <div class="brand-container">
+        <span class="brand-title">⚗️ Farmacotécnica Magistral</span>
+      </div>
+      <div class="user-info">
+        <span id="lblUsuario">Carregando...</span>
+        <button id="btnVoltarPortal" class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.8rem;">Portal</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-container">
+    <!-- Abas de Navegação -->
+    <nav class="tabs-nav" aria-label="Abas de Simulação">
+      <button class="tab-btn active" data-tab="tab-alcool">Diluição Alcoólica</button>
+      <button class="tab-btn" data-tab="tab-fatores">Fatores de Correção & Equivalência</button>
+      <button class="tab-btn" data-tab="tab-ehl">Balanço Hidrofílico-Lipofílico (EHL)</button>
+    </nav>
+
+    <!-- ABA 1: DILUIÇÃO ALCOÓLICA -->
+    <section id="tab-alcool" class="tab-pane active">
+      <div class="grid-2">
+        <div class="card">
+          <h2 class="card-title">Parâmetros da Diluição</h2>
+          <div id="alert-alcool"></div>
+          
+          <form id="form-alcool" autocomplete="off">
+            <div class="form-group">
+              <label class="form-label" for="alc-modo">Base de Cálculo</label>
+              <select id="alc-modo" class="form-control">
+                <option value="volume">Volumétrica (°GL - % v/v)</option>
+                <option value="massa">Gravimétrica (°INPM - % p/p)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="alc-c-partida">Concentração do Álcool de Partida (C1)</label>
+              <input type="number" id="alc-c-partida" class="form-control" step="0.1" min="1" max="99.9" value="96.0" required>
+              <small class="field-help" id="help-c1">Exemplo: Álcool 96°GL ou 92.8°INPM</small>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="alc-c-final">Concentração Desejada (C2)</label>
+              <input type="number" id="alc-c-final" class="form-control" step="0.1" min="1" max="99.9" value="70.0" required>
+              <small class="field-help" id="help-c2">Exemplo: Álcool 70°GL ou 70°INPM</small>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="alc-qtd-final">Quantidade Final Pretendida (V2 ou M2)</label>
+              <input type="number" id="alc-qtd-final" class="form-control" step="0.1" min="1" value="1000" required>
+              <small class="field-help" id="help-qtd">Volume final em mL ou Massa final em gramas</small>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Executar Cálculo Farmacopeico</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <h2 class="card-title">Resultado e Laudo de Manipulação</h2>
+          <div id="res-alcool-placeholder" class="placeholder-text">Preencha os dados e clique em executar para gerar o memorial.</div>
+          <div id="res-alcool-content" class="calc-result" style="display: none;">
+            <div class="stat-box">
+              <span class="stat-label" id="lbl-res-partida">Álcool de Partida Necessário:</span>
+              <span class="stat-value" id="val-res-partida">0,00</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label" id="lbl-res-diluente">Água Purificada:</span>
+              <span class="stat-value" id="val-res-diluente">0,00</span>
+            </div>
+            <div class="alert alert-warning" id="box-alerta-volume" style="margin-top: 15px;">
+              <strong>Atenção Farmacotécnica:</strong> Devido à contração de volume intermolecular em soluções hidroalcoólicas, 
+              o volume de água purificada deve ser adicionado <em>Q.S.P.</em> até a marcação do balão volumétrico a 20°C.
+            </div>
+            <div class="step-trace">
+              <h3 style="font-size: 0.95rem; margin-bottom: 8px;">Memorial de Cálculo:</h3>
+              <pre id="trace-alcool" class="code-trace"></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABA 2: FATORES DE CORREÇÃO E EQUIVALÊNCIA -->
+    <section id="tab-fatores" class="tab-pane" style="display: none;">
+      <div class="grid-2">
+        <div class="card">
+          <h2 class="card-title">Correção de Matéria-Prima</h2>
+          <div id="alert-fatores"></div>
+          
+          <form id="form-fatores" autocomplete="off">
+            <div class="form-group">
+              <label class="form-label" for="fat-prescrito">Massa Prescrita de Princípio Ativo Puro (mg)</label>
+              <input type="number" id="fat-prescrito" class="form-control" step="0.01" min="0.01" value="100.0" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="fat-umidade">Teor de Umidade residual do Laudo (%U)</label>
+              <input type="number" id="fat-umidade" class="form-control" step="0.01" min="0" max="99" value="0.0">
+              <small class="field-help">Deixe 0 se laudo isento de umidade.</small>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="fat-pureza">Teor / Pureza da Matéria-Prima (%T)</label>
+              <input type="number" id="fat-pureza" class="form-control" step="0.01" min="1" max="100" value="100.0" required>
+              <small class="field-help">Informado no certificado de análise do fornecedor.</small>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Equivalência Química (Sal / Base)</label>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <input type="number" id="fat-pm-sal" class="form-control" step="0.01" min="1" placeholder="PM Sal / Hidrato" value="100.0">
+                <input type="number" id="fat-pm-base" class="form-control" step="0.01" min="1" placeholder="PM Forma Ativa" value="100.0">
+              </div>
+              <small class="field-help">Se a matéria-prima for a própria forma ativa, mantenha valores iguais (F.Eq = 1.0).</small>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Calcular Massa Corrigida</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <h2 class="card-title">Resultado Ponderal</h2>
+          <div id="res-fatores-placeholder" class="placeholder-text">Insira os parâmetros para obter os fatores isolados e a pesagem real.</div>
+          <div id="res-fatores-content" class="calc-result" style="display: none;">
+            <div class="stat-box">
+              <span class="stat-label">Fator de Correção de Umidade (FCu):</span>
+              <span class="stat-value" id="val-fcu">1,0000</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">Fator de Correção de Pureza (FCt):</span>
+              <span class="stat-value" id="val-fct">1,0000</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">Fator de Equivalência (FEq):</span>
+              <span class="stat-value" id="val-feq">1,0000</span>
+            </div>
+            <div class="stat-box highlight">
+              <span class="stat-label">FATOR DE CORREÇÃO GLOBAL:</span>
+              <span class="stat-value" id="val-fcg">1,0000</span>
+            </div>
+            <div class="stat-box highlight-success">
+              <span class="stat-label">Massa Final a Pesar:</span>
+              <span class="stat-value" id="val-massa-pesar">0,00 mg</span>
+            </div>
+            <div class="step-trace">
+              <h3 style="font-size: 0.95rem; margin-bottom: 8px;">Memorial Algébrico:</h3>
+              <pre id="trace-fatores" class="code-trace"></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABA 3: BALANÇO DE EHL -->
+    <section id="tab-ehl" class="tab-pane" style="display: none;">
+      <div class="grid-2">
+        <div class="card">
+          <h2 class="card-title">Estabilização de Emulsão</h2>
+          <div id="alert-ehl"></div>
+          
+          <form id="form-ehl" autocomplete="off">
+            <div class="form-group">
+              <label class="form-label" for="ehl-req">EHL Crítico Requerido pela Fase Oleosa</label>
+              <input type="number" id="ehl-req" class="form-control" step="0.1" min="1" max="20" value="10.5" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="ehl-massa-total">Massa Total do Par de Tensoativos (g)</label>
+              <input type="number" id="ehl-massa-total" class="form-control" step="0.01" min="0.01" value="5.00" required>
+            </div>
+
+            <div style="background-color: var(--bg-alt); padding: 12px; border-radius: var(--border-radius-sm); margin-bottom: 16px;">
+              <h3 style="font-size: 0.9rem; margin-bottom: 8px;">Tensoativo A (Maior EHL - Hidrofílico)</h3>
+              <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 8px;">
+                <input type="text" id="ehl-nome-a" class="form-control" value="Polissorbato 80 (Tween 80)" required>
+                <input type="number" id="ehl-val-a" class="form-control" step="0.1" min="0.1" max="25" value="15.0" required>
+              </div>
+            </div>
+
+            <div style="background-color: var(--bg-alt); padding: 12px; border-radius: var(--border-radius-sm); margin-bottom: 16px;">
+              <h3 style="font-size: 0.9rem; margin-bottom: 8px;">Tensoativo B (Menor EHL - Lipofílico)</h3>
+              <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 8px;">
+                <input type="text" id="ehl-nome-b" class="form-control" value="Monoleato de Sorbitano (Span 80)" required>
+                <input type="number" id="ehl-val-b" class="form-control" step="0.1" min="0.1" max="25" value="4.3" required>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Calcular Proporção do Sistema Tensoativo</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <h2 class="card-title">Composição do Par Emulsionante</h2>
+          <div id="res-ehl-placeholder" class="placeholder-text">Defina os tensoativos e o EHL desejado para fracionar a mistura.</div>
+          <div id="res-ehl-content" class="calc-result" style="display: none;">
+            <div class="stat-box">
+              <span class="stat-label" id="lbl-ehl-res-a">Tensoativo A:</span>
+              <span class="stat-value" id="val-ehl-res-a">0,00 g (0,0%)</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label" id="lbl-ehl-res-b">Tensoativo B:</span>
+              <span class="stat-value" id="val-ehl-res-b">0,00 g (0,0%)</span>
+            </div>
+            <div class="stat-box highlight">
+              <span class="stat-label">EHL Resultante da Blenda:</span>
+              <span class="stat-value" id="val-ehl-blenda">0,00</span>
+            </div>
+            <div class="step-trace">
+              <h3 style="font-size: 0.95rem; margin-bottom: 8px;">Resolução do Sistema Linear:</h3>
+              <pre id="trace-ehl" class="code-trace"></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    Liga Acadêmica de Farmácia &copy; <span id="lblAno"></span> - Plataforma Aberta de Farmácia Magistral
+  </footer>
+
+  <!-- Carregamento Ordenado de Scripts -->
+  <script src="../assets/js/config.js"></script>
+  <script src="../assets/js/utils.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script src="simulador.js"></script>
+</body>
+</html>
