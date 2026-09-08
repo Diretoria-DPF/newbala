@@ -1,0 +1,76 @@
+/* ==========================================================================
+   ESTILOS ESPECÍFICOS: SIMULADOR FARMACOTÉCNICO
+   ========================================================================== */
+
+.tab-pane {
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.field-help {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  margin-top: 3px;
+}
+
+.placeholder-text {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 40px var(--spacing-md);
+  font-style: italic;
+}
+
+.stat-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background-color: var(--bg-alt);
+  border-radius: var(--border-radius-sm);
+  margin-bottom: 10px;
+}
+
+.stat-box.highlight {
+  background-color: #fff3cd;
+  border-left: 4px solid var(--warning-color);
+}
+
+.stat-box.highlight-success {
+  background-color: #d1e7dd;
+  border-left: 4px solid var(--success-color);
+}
+
+.stat-label {
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.stat-value {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--primary-color);
+  font-family: var(--font-mono);
+}
+
+.step-trace {
+  margin-top: var(--spacing-lg);
+}
+
+.code-trace {
+  background-color: #1e1e1e;
+  color: #00ff66;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  padding: 12px;
+  border-radius: var(--border-radius-sm);
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.4;
+  max-height: 250px;
+  overflow-y: auto;
+}
