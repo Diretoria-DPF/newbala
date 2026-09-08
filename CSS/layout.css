@@ -1,0 +1,70 @@
+/* ==========================================================================
+   LAYOUT, GRID E NAVBAR RESPONSIVA
+   ========================================================================== */
+
+.app-header {
+  background-color: var(--primary-color);
+  color: var(--text-light);
+  box-shadow: var(--shadow-md);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.navbar {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-sm) var(--spacing-md);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand-container {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.brand-title {
+  font-size: 1.15rem;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  color: var(--text-light);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: 0.875rem;
+}
+
+.main-container {
+  flex: 1;
+  max-width: 1200px;
+  width: 100%;
+  margin: var(--spacing-lg) auto;
+  padding: 0 var(--spacing-md);
+}
+
+.app-footer {
+  background-color: #0b1319;
+  color: #adb5bd;
+  text-align: center;
+  padding: var(--spacing-md);
+  font-size: 0.85rem;
+  margin-top: auto;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-lg);
+}
+
+@media (min-width: 768px) {
+  .grid-2 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
