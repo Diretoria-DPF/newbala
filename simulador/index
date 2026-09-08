@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulador Farmacotécnico | Liga de Farmácia</title>
+  <link rel="stylesheet" href="../assets/css/global.css">
+  <link rel="stylesheet" href="../assets/css/layout.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <link rel="stylesheet" href="simulador.css">
+</head>
+<body class="bg-surface">
+  <header class="navbar">
+    <div class="navbar-container">
+      <a href="../index.html" class="navbar-brand">
+        <span class="brand-text">Farmacotécnica Magistral</span>
+      </a>
+      <div class="user-session" id="user-session-badge">
+        <span class="badge badge-info" id="session-user-name">Verificando sessão...</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-container">
+    <div class="header-action">
+      <div>
+        <h1 class="page-title">Simulador Virtual de Cálculos Magistrais</h1>
+        <p class="text-muted">Cálculos estequiométricos, diluições alcoométricas e estabilização de emulsões.</p>
+      </div>
+    </div>
+
+    <!-- Navegação em Abas -->
+    <nav class="tabs-nav" aria-label="Calculadoras">
+      <button class="tab-btn active" data-tab="tab-alcool">Alcoolometria</button>
+      <button class="tab-btn" data-tab="tab-correcao">Fator de Correção / Equivalência</button>
+      <button class="tab-btn" data-tab="tab-ehl">Balanço de EHL</button>
+    </nav>
+
+    <!-- Alerta Global do Módulo -->
+    <div id="simulador-alert" class="alert hidden" role="alert"></div>
+
+    <!-- ABA 1: ALCOOLOMETRIA -->
+    <section id="tab-alcool" class="tab-content active">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Diluição de Álcool Etílico (GL / %)</h2>
+        </div>
+        <div class="card-body">
+          <form id="form-alcool" novalidate>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="alcool-c-partida" class="form-label">Concentração de Partida (°GL ou % v/v):</label>
+                <input type="number" id="alcool-c-partida" class="form-control" placeholder="Ex: 96.0" step="0.1" min="1" max="100" required>
+                <span class="form-hint">Geralmente Álcool 96°GL</span>
+              </div>
+              <div class="form-group">
+                <label for="alcool-c-final" class="form-label">Concentração Alvo (°GL ou % v/v):</label>
+                <input type="number" id="alcool-c-final" class="form-control" placeholder="Ex: 70.0" step="0.1" min="0.1" max="99.9" required>
+                <span class="form-hint">Ex: Álcool 70°GL (antisséptico)</span>
+              </div>
+              <div class="form-group">
+                <label for="alcool-v-final" class="form-label">Volume Final Pretendido (mL):</label>
+                <input type="number" id="alcool-v-final" class="form-control" placeholder="Ex: 1000" step="1" min="1" required>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary" id="btn-calc-alcool">Calcular Diluição</button>
+              <button type="button" class="btn btn-secondary btn-reset">Limpar</button>
+            </div>
+          </form>
+
+          <div id="result-alcool" class="result-box hidden">
+            <h3 class="result-title">Instruções de Manipulação</h3>
+            <div class="result-grid">
+              <div class="result-item">
+                <span class="result-label">Volume de Álcool de Partida:</span>
+                <span class="result-value" id="res-v-partida">0,00 mL</span>
+              </div>
+              <div class="result-item">
+                <span class="result-label">Volume de Água Purificada (q.s.p.):</span>
+                <span class="result-value" id="res-v-agua">0,00 mL</span>
+              </div>
+            </div>
+            <div class="alert alert-warning mt-3">
+              <strong>Nota Técnica:</strong> Devido ao fenômeno de contração de volume na mistura hidroalcoólica (interações por pontes de hidrogênio), transfira o volume de álcool calculado e complete com água purificada em balão volumétrico aferido até a marca exata do menisco.
+            </div>
+            <button class="btn btn-outline mt-3 btn-save-log" data-type="ALCOOL">Registrar em Ficha Técnica</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABA 2: FATOR DE CORREÇÃO E EQUIVALÊNCIA -->
+    <section id="tab-correcao" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Cálculo de Fatores de Correção e Equivalência</h2>
+        </div>
+        <div class="card-body">
+          <form id="form-correcao" novalidate>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="fc-farmaco" class="form-label">Nome do Fármaco / Matéria-Prima:</label>
+                <input type="text" id="fc-farmaco" class="form-control" placeholder="Ex: Captopril ou Doxiciclina Hiclato" required>
+              </div>
+              <div class="form-group">
+                <label for="fc-dose" class="form-label">Dose Prescrita (mg):</label>
+                <input type="number" id="fc-dose" class="form-control" placeholder="Ex: 50" step="0.01" min="0.001" required>
+              </div>
+              <div class="form-group">
+                <label for="fc-umidade" class="form-label">Teor de Umidade do Laudo (%):</label>
+                <input type="number" id="fc-umidade" class="form-control" value="0.0" step="0.01" min="0" max="99.9">
+                <span class="form-hint">0 se a matéria-prima for anidra</span>
+              </div>
+              <div class="form-group">
+                <label for="fc-pureza" class="form-label">Teor de Pureza / Potência do Laudo (%):</label>
+                <input type="number" id="fc-pureza" class="form-control" value="100.0" step="0.01" min="1" max="100" required>
+                <span class="form-hint">Geralmente entre 98% e 100%</span>
+              </div>
+              <div class="form-group">
+                <label for="fc-pm-sal" class="form-label">Peso Molecular da Forma Comercial (Sal/Éster):</label>
+                <input type="number" id="fc-pm-sal" class="form-control" placeholder="Ex: 512.9" step="0.01" min="0">
+                <span class="form-hint">Deixe em branco se for a base pura</span>
+              </div>
+              <div class="form-group">
+                <label for="fc-pm-base" class="form-label">Peso Molecular da Base Ativa:</label>
+                <input type="number" id="fc-pm-base" class="form-control" placeholder="Ex: 444.4" step="0.01" min="0">
+                <span class="form-hint">Deixe em branco se for a base pura</span>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary" id="btn-calc-correcao">Calcular Pesagem Corrigida</button>
+              <button type="button" class="btn btn-secondary btn-reset">Limpar</button>
+            </div>
+          </form>
+
+          <div id="result-correcao" class="result-box hidden">
+            <h3 class="result-title">Resultados de Correção Estequiométrica</h3>
+            <div class="result-grid">
+              <div class="result-item">
+                <span class="result-label">Fator de Correção de Umidade/Teor (Fc):</span>
+                <span class="result-value" id="res-fc">1.0000</span>
+              </div>
+              <div class="result-item">
+                <span class="result-label">Fator de Equivalência (Feq):</span>
+                <span class="result-value" id="res-feq">1.0000</span>
+              </div>
+              <div class="result-item">
+                <span class="result-label">Fator de Correção Total (Ft):</span>
+                <span class="result-value" id="res-ftot">1.0000</span>
+              </div>
+              <div class="result-item highlight">
+                <span class="result-label">Massa Final a Pesar por Dose:</span>
+                <span class="result-value" id="res-massa-final">0,00 mg</span>
+              </div>
+            </div>
+            <button class="btn btn-outline mt-3 btn-save-log" data-type="CORRECAO">Registrar em Ficha Técnica</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABA 3: BALANÇO DE EHL -->
+    <section id="tab-ehl" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Cálculo de Mistura de Tensoativos (EHL Requerido)</h2>
+        </div>
+        <div class="card-body">
+          <form id="form-ehl" novalidate>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="ehl-requerido" class="form-label">EHL Crítico Requerido pela Fase Oleosa:</label>
+                <input type="number" id="ehl-requerido" class="form-control" placeholder="Ex: 10.5" step="0.1" min="1" max="20" required>
+              </div>
+              <div class="form-group">
+                <label for="ehl-massa-total" class="form-label">Percentual Total de Tensoativos na Fórmula (%):</label>
+                <input type="number" id="ehl-massa-total" class="form-control" placeholder="Ex: 5.0" step="0.1" min="0.1" max="100" required>
+              </div>
+              <div class="form-group">
+                <label for="ehl-t1-nome" class="form-label">Nome do Tensoativo Lipofílico (Menor EHL):</label>
+                <input type="text" id="ehl-t1-nome" class="form-control" placeholder="Ex: Span 80" required>
+              </div>
+              <div class="form-group">
+                <label for="ehl-t1-val" class="form-label">EHL do Tensoativo Lipofílico:</label>
+                <input type="number" id="ehl-t1-val" class="form-control" placeholder="Ex: 4.3" step="0.1" min="0.1" max="20" required>
+              </div>
+              <div class="form-group">
+                <label for="ehl-t2-nome" class="form-label">Nome do Tensoativo Hidrofílico (Maior EHL):</label>
+                <input type="text" id="ehl-t2-nome" class="form-control" placeholder="Ex: Tween 80" required>
+              </div>
+              <div class="form-group">
+                <label for="ehl-t2-val" class="form-label">EHL do Tensoativo Hidrofílico:</label>
+                <input type="number" id="ehl-t2-val" class="form-control" placeholder="Ex: 15.0" step="0.1" min="0.1" max="20" required>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary" id="btn-calc-ehl">Calcular Proporção do Blend</button>
+              <button type="button" class="btn btn-secondary btn-reset">Limpar</button>
+            </div>
+          </form>
+
+          <div id="result-ehl" class="result-box hidden">
+            <h3 class="result-title">Composição do Blend Emulsionante</h3>
+            <div class="result-grid">
+              <div class="result-item">
+                <span class="result-label" id="res-ehl-t1-label">Tensoativo 1:</span>
+                <span class="result-value" id="res-ehl-t1-val">0.00 %</span>
+              </div>
+              <div class="result-item">
+                <span class="result-label" id="res-ehl-t2-label">Tensoativo 2:</span>
+                <span class="result-value" id="res-ehl-t2-val">0.00 %</span>
+              </div>
+            </div>
+            <button class="btn btn-outline mt-3 btn-save-log" data-type="EHL">Registrar em Ficha Técnica</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="../assets/js/utils.js"></script>
+  <script src="../assets/js/config.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script src="simulador.js"></script>
+</body>
+</html>
