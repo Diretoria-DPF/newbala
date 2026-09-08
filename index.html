@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulador Farmacotécnico | Liga de Farmácia</title>
+  <title>Bancada Virtual de Farmacotécnica | Liga de Farmácia</title>
   <link rel="stylesheet" href="../assets/css/global.css">
   <link rel="stylesheet" href="../assets/css/layout.css">
   <link rel="stylesheet" href="../assets/css/components.css">
@@ -13,33 +13,42 @@
   <header class="app-header">
     <div class="navbar">
       <div class="brand-container">
-        <span class="brand-title">⚗️ Farmacotécnica Magistral</span>
+        <span class="brand-title">🔬 Bancada Interativa de Farmacotécnica</span>
       </div>
       <div class="user-info">
-        <span id="lblUsuario">Carregando...</span>
-        <button id="btnVoltarPortal" class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.8rem;">Portal</button>
+        <span id="lblUsuario">Identificando discente...</span>
+        <button id="btnVoltarPortal" class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.8rem;">Sair</button>
       </div>
     </div>
   </header>
 
   <main class="main-container">
-    <!-- Abas de Navegação -->
-    <nav class="tabs-nav" aria-label="Abas de Simulação">
-      <button class="tab-btn active" data-tab="tab-alcool">Diluição Alcoólica</button>
-      <button class="tab-btn" data-tab="tab-fatores">Fatores de Correção & Equivalência</button>
-      <button class="tab-btn" data-tab="tab-ehl">Balanço Hidrofílico-Lipofílico (EHL)</button>
+    <!-- Navegação por Abas -->
+    <nav class="tabs-nav" aria-label="Abas da Bancada">
+      <button class="tab-btn active" data-tab="tab-alcool">1. Alcoolometria & Menisco</button>
+      <button class="tab-btn" data-tab="tab-fatores">2. Balança & Fatores de Pesagem</button>
+      <button class="tab-btn" data-tab="tab-ehl">3. Agitador & Balanço de EHL</button>
     </nav>
 
-    <!-- ABA 1: DILUIÇÃO ALCOÓLICA -->
+    <!-- ABA 1: ALCOOLOMETRIA INTERATIVA -->
     <section id="tab-alcool" class="tab-pane active">
+      <!-- Barra de Casos Práticos -->
+      <div class="preset-bar">
+        <span class="preset-label">Desafios Rápidos:</span>
+        <button type="button" class="btn-preset" data-preset="alcool-70-hosp">Álcool 70°GL Hospitalar (1000 mL)</button>
+        <button type="button" class="btn-preset" data-preset="alcool-inpm-gel">Álcool Gel 70°INPM (500 g)</button>
+        <button type="button" class="btn-preset" data-preset="alcool-80-assep">Álcool 80°GL Assepsia (250 mL)</button>
+      </div>
+
       <div class="grid-2">
+        <!-- Controles do Experimento -->
         <div class="card">
-          <h2 class="card-title">Parâmetros da Diluição</h2>
+          <h2 class="card-title">Parâmetros de Diluição</h2>
           <div id="alert-alcool"></div>
           
           <form id="form-alcool" autocomplete="off">
             <div class="form-group">
-              <label class="form-label" for="alc-modo">Base de Cálculo</label>
+              <label class="form-label" for="alc-modo">Escala Alcoólica</label>
               <select id="alc-modo" class="form-control">
                 <option value="volume">Volumétrica (°GL - % v/v)</option>
                 <option value="massa">Gravimétrica (°INPM - % p/p)</option>
@@ -47,54 +56,114 @@
             </div>
 
             <div class="form-group">
-              <label class="form-label" for="alc-c-partida">Concentração do Álcool de Partida (C1)</label>
+              <label class="form-label" for="alc-c-partida">Concentração de Partida (C1)</label>
               <input type="number" id="alc-c-partida" class="form-control" step="0.1" min="1" max="99.9" value="96.0" required>
-              <small class="field-help" id="help-c1">Exemplo: Álcool 96°GL ou 92.8°INPM</small>
+              <small class="field-help" id="help-c1">Álcool comercial de estoque (°GL)</small>
             </div>
 
             <div class="form-group">
               <label class="form-label" for="alc-c-final">Concentração Desejada (C2)</label>
               <input type="number" id="alc-c-final" class="form-control" step="0.1" min="1" max="99.9" value="70.0" required>
-              <small class="field-help" id="help-c2">Exemplo: Álcool 70°GL ou 70°INPM</small>
+              <small class="field-help" id="help-c2">Concentração farmacopeica final</small>
             </div>
 
             <div class="form-group">
-              <label class="form-label" for="alc-qtd-final">Quantidade Final Pretendida (V2 ou M2)</label>
+              <label class="form-label" for="alc-qtd-final">Volume/Massa Alvo (V2 ou M2)</label>
               <input type="number" id="alc-qtd-final" class="form-control" step="0.1" min="1" value="1000" required>
-              <small class="field-help" id="help-qtd">Volume final em mL ou Massa final em gramas</small>
+              <small class="field-help" id="help-qtd">Quantidade final em mL ou g</small>
             </div>
 
-            <button type="submit" class="btn btn-primary" style="width: 100%;">Executar Cálculo Farmacopeico</button>
+            <div class="action-buttons-group">
+              <button type="submit" class="btn btn-primary" id="btn-calcular-alcool">
+                <span>⚡ Calcular & Preencher Vidraria</span>
+              </button>
+              <button type="button" class="btn btn-secondary" id="btn-reset-alcool">Limpar Vidraria</button>
+            </div>
           </form>
+
+          <div id="box-memorial-alcool" class="step-trace" style="display: none;">
+            <h3 style="font-size: 0.9rem; margin-bottom: 6px;">Memorial Farmacopeico:</h3>
+            <pre id="trace-alcool" class="code-trace"></pre>
+          </div>
         </div>
 
-        <div class="card">
-          <h2 class="card-title">Resultado e Laudo de Manipulação</h2>
-          <div id="res-alcool-placeholder" class="placeholder-text">Preencha os dados e clique em executar para gerar o memorial.</div>
-          <div id="res-alcool-content" class="calc-result" style="display: none;">
-            <div class="stat-box">
-              <span class="stat-label" id="lbl-res-partida">Álcool de Partida Necessário:</span>
-              <span class="stat-value" id="val-res-partida">0,00</span>
+        <!-- Vidraria Virtual Interativa -->
+        <div class="card bench-view">
+          <h2 class="card-title">Vidraria em Bancada (20°C)</h2>
+          
+          <div class="glassware-stage">
+            <!-- Balão Volumétrico SVG -->
+            <div class="glass-item">
+              <svg class="svg-flask" viewBox="0 0 140 220" width="140" height="220">
+                <!-- Marcação de Linha de Calibração -->
+                <line x1="55" y1="65" x2="85" y2="65" stroke="#ae2012" stroke-width="1.5" stroke-dasharray="2,2"/>
+                <text x="90" y="68" font-size="8" fill="#ae2012" font-weight="bold">Calibre Q.S.P.</text>
+                
+                <!-- Contorno do Balão -->
+                <path class="glass-outline" d="M 60,10 L 80,10 L 80,75 Q 130,130 115,190 Q 110,210 70,210 Q 30,210 25,190 Q 10,130 60,75 Z" />
+                
+                <!-- Recorte do Líquido -->
+                <clipPath id="flaskClip">
+                  <path d="M 60,10 L 80,10 L 80,75 Q 130,130 115,190 Q 110,210 70,210 Q 30,210 25,190 Q 10,130 60,75 Z" />
+                </clipPath>
+                
+                <!-- Camada de Líquido Diluente (Água) -->
+                <rect id="flask-liquid-water" class="liquid-water" x="10" y="210" width="120" height="0" clip-path="url(#flaskClip)"/>
+                <!-- Camada de Líquido de Partida (Etanol) -->
+                <rect id="flask-liquid-alcohol" class="liquid-alcohol" x="10" y="210" width="120" height="0" clip-path="url(#flaskClip)"/>
+                
+                <!-- Menisco da Superfície -->
+                <ellipse id="flask-meniscus" cx="70" cy="210" rx="10" ry="2" class="liquid-meniscus" opacity="0"/>
+              </svg>
+              <span class="glass-caption">Balão de Diluição</span>
             </div>
-            <div class="stat-box">
-              <span class="stat-label" id="lbl-res-diluente">Água Purificada:</span>
-              <span class="stat-value" id="val-res-diluente">0,00</span>
+
+            <!-- Proveta Graduada SVG -->
+            <div class="glass-item">
+              <svg class="svg-cylinder" viewBox="0 0 70 220" width="70" height="220">
+                <path class="glass-outline" d="M 20,20 L 50,20 L 50,205 L 60,205 L 60,215 L 10,215 L 10,205 L 20,205 Z" />
+                <clipPath id="cylinderClip">
+                  <rect x="21" y="21" width="28" height="184"/>
+                </clipPath>
+                <rect id="cylinder-liquid" class="liquid-alcohol" x="21" y="205" width="28" height="0" clip-path="url(#cylinderClip)"/>
+                <!-- Graduações -->
+                <line x1="42" y1="50" x2="49" y2="50" stroke="#6c757d" stroke-width="1"/>
+                <line x1="42" y1="80" x2="49" y2="80" stroke="#6c757d" stroke-width="1"/>
+                <line x1="42" y1="110" x2="49" y2="110" stroke="#6c757d" stroke-width="1"/>
+                <line x1="42" y1="140" x2="49" y2="140" stroke="#6c757d" stroke-width="1"/>
+                <line x1="42" y1="170" x2="49" y2="170" stroke="#6c757d" stroke-width="1"/>
+              </svg>
+              <span class="glass-caption">Proveta de Medição</span>
             </div>
-            <div class="alert alert-warning" id="box-alerta-volume" style="margin-top: 15px;">
-              <strong>Atenção Farmacotécnica:</strong> Devido à contração de volume intermolecular em soluções hidroalcoólicas, 
-              o volume de água purificada deve ser adicionado <em>Q.S.P.</em> até a marcação do balão volumétrico a 20°C.
+          </div>
+
+          <!-- Painel Dinâmico de Resultados -->
+          <div class="bench-readout">
+            <div class="readout-row">
+              <span>Fração Alcoólica de Partida:</span>
+              <strong id="disp-val-partida">0,00 mL</strong>
             </div>
-            <div class="step-trace">
-              <h3 style="font-size: 0.95rem; margin-bottom: 8px;">Memorial de Cálculo:</h3>
-              <pre id="trace-alcool" class="code-trace"></pre>
+            <div class="readout-row">
+              <span>Complemento de Água Purificada:</span>
+              <strong id="disp-val-agua">0,00 mL</strong>
+            </div>
+            <div id="status-qualidade-alcool" class="quality-badge" style="display:none;">
+              ✓ Calibração em Menisco Homologada
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ABA 2: FATORES DE CORREÇÃO E EQUIVALÊNCIA -->
+    <!-- ABA 2: BALANÇA ANALÍTICA & FATORES -->
     <section id="tab-fatores" class="tab-pane" style="display: none;">
+      <div class="preset-bar">
+        <span class="preset-label">Desafios Rápidos:</span>
+        <button type="button" class="btn-preset" data-preset="fat-doxiciclina">Doxiciclina Hiclato (Equiv + Umidade)</button>
+        <button type="button" class="btn-preset" data-preset="fat-captopril">Captopril com Pureza 97,5%</button>
+        <button type="button" class="btn-preset" data-preset="fat-dipirona">Dipirona Sódica Monoidratada</button>
+      </div>
+
       <div class="grid-2">
         <div class="card">
           <h2 class="card-title">Correção de Matéria-Prima</h2>
@@ -102,125 +171,201 @@
           
           <form id="form-fatores" autocomplete="off">
             <div class="form-group">
-              <label class="form-label" for="fat-prescrito">Massa Prescrita de Princípio Ativo Puro (mg)</label>
-              <input type="number" id="fat-prescrito" class="form-control" step="0.01" min="0.01" value="100.0" required>
+              <label class="form-label" for="fat-prescrito">Massa Prescrita Ativa (mg)</label>
+              <input type="number" id="fat-prescrito" class="form-control" step="0.01" min="0.1" value="100.0" required>
             </div>
 
             <div class="form-group">
-              <label class="form-label" for="fat-umidade">Teor de Umidade residual do Laudo (%U)</label>
-              <input type="number" id="fat-umidade" class="form-control" step="0.01" min="0" max="99" value="0.0">
-              <small class="field-help">Deixe 0 se laudo isento de umidade.</small>
+              <label class="form-label" for="fat-umidade">Teor de Umidade do Laudo (%U)</label>
+              <input type="number" id="fat-umidade" class="form-control" step="0.01" min="0" max="99" value="2.5">
             </div>
 
             <div class="form-group">
-              <label class="form-label" for="fat-pureza">Teor / Pureza da Matéria-Prima (%T)</label>
-              <input type="number" id="fat-pureza" class="form-control" step="0.01" min="1" max="100" value="100.0" required>
-              <small class="field-help">Informado no certificado de análise do fornecedor.</small>
+              <label class="form-label" for="fat-pureza">Teor de Pureza do Laudo (%T)</label>
+              <input type="number" id="fat-pureza" class="form-control" step="0.01" min="1" max="100" value="98.5" required>
             </div>
 
             <div class="form-group">
-              <label class="form-label">Equivalência Química (Sal / Base)</label>
+              <label class="form-label">Equivalência Sal / Base</label>
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                <input type="number" id="fat-pm-sal" class="form-control" step="0.01" min="1" placeholder="PM Sal / Hidrato" value="100.0">
-                <input type="number" id="fat-pm-base" class="form-control" step="0.01" min="1" placeholder="PM Forma Ativa" value="100.0">
+                <input type="number" id="fat-pm-sal" class="form-control" step="0.01" min="1" placeholder="PM Sal/Hidrato" value="512.9" required>
+                <input type="number" id="fat-pm-base" class="form-control" step="0.01" min="1" placeholder="PM Fármaco Base" value="444.4" required>
               </div>
-              <small class="field-help">Se a matéria-prima for a própria forma ativa, mantenha valores iguais (F.Eq = 1.0).</small>
+              <small class="field-help">Ex: Doxiciclina hiclato (512.9) / Doxiciclina base (444.4)</small>
             </div>
 
-            <button type="submit" class="btn btn-primary" style="width: 100%;">Calcular Massa Corrigida</button>
+            <div class="action-buttons-group">
+              <button type="submit" class="btn btn-primary" id="btn-calcular-fatores">
+                <span>⚖️ Calcular Fatores & Pesar</span>
+              </button>
+              <button type="button" class="btn btn-secondary" id="btn-tarar-balanca">Tarar Balança</button>
+            </div>
           </form>
+
+          <div id="box-memorial-fatores" class="step-trace" style="display: none;">
+            <h3 style="font-size: 0.9rem; margin-bottom: 6px;">Trilha Algébrica:</h3>
+            <pre id="trace-fatores" class="code-trace"></pre>
+          </div>
         </div>
 
-        <div class="card">
-          <h2 class="card-title">Resultado Ponderal</h2>
-          <div id="res-fatores-placeholder" class="placeholder-text">Insira os parâmetros para obter os fatores isolados e a pesagem real.</div>
-          <div id="res-fatores-content" class="calc-result" style="display: none;">
-            <div class="stat-box">
-              <span class="stat-label">Fator de Correção de Umidade (FCu):</span>
-              <span class="stat-value" id="val-fcu">1,0000</span>
+        <!-- Balança Analítica Digital Virtual -->
+        <div class="card bench-view">
+          <h2 class="card-title">Balança Analítica Digital (0,0001 g)</h2>
+          
+          <div class="balance-container">
+            <!-- Caixa de Pesagem com Vidro de Relógio -->
+            <div class="balance-chamber">
+              <svg viewBox="0 0 200 120" width="200" height="120">
+                <!-- Suporte e Prato da Balança -->
+                <rect x="70" y="90" width="60" height="8" fill="#495057" rx="2"/>
+                <line x1="100" y1="90" x2="100" y2="78" stroke="#343a40" stroke-width="4"/>
+                <ellipse cx="100" cy="78" rx="60" ry="12" fill="#adb5bd" stroke="#6c757d" stroke-width="2"/>
+                
+                <!-- Vidro de Relógio Côncavo -->
+                <path d="M 55,77 Q 100,88 145,77" stroke="#005f73" stroke-width="3" fill="none" opacity="0.6"/>
+                
+                <!-- Pó de Fármaco Acumulado (Animado) -->
+                <ellipse id="balance-powder" cx="100" cy="80" rx="0" ry="0" fill="#e9d8a6" stroke="#ca6702" stroke-width="0.5"/>
+              </svg>
             </div>
-            <div class="stat-box">
-              <span class="stat-label">Fator de Correção de Pureza (FCt):</span>
-              <span class="stat-value" id="val-fct">1,0000</span>
+
+            <!-- Display Digital LED Verde -->
+            <div class="digital-display">
+              <div class="display-indicators">
+                <span id="disp-stable" class="ind-active">[STABLE]</span>
+                <span class="ind-unit">g</span>
+              </div>
+              <div class="display-digits" id="disp-balanca-valor">0.0000</div>
             </div>
-            <div class="stat-box">
-              <span class="stat-label">Fator de Equivalência (FEq):</span>
-              <span class="stat-value" id="val-feq">1,0000</span>
+          </div>
+
+          <div class="bench-readout">
+            <div class="readout-row">
+              <span>Fator de Correção Global (FCG):</span>
+              <strong id="disp-fcg">1,0000</strong>
             </div>
-            <div class="stat-box highlight">
-              <span class="stat-label">FATOR DE CORREÇÃO GLOBAL:</span>
-              <span class="stat-value" id="val-fcg">1,0000</span>
+            <div class="readout-row">
+              <span>Massa Real Ponderada:</span>
+              <strong id="disp-massa-mg">0,00 mg</strong>
             </div>
-            <div class="stat-box highlight-success">
-              <span class="stat-label">Massa Final a Pesar:</span>
-              <span class="stat-value" id="val-massa-pesar">0,00 mg</span>
-            </div>
-            <div class="step-trace">
-              <h3 style="font-size: 0.95rem; margin-bottom: 8px;">Memorial Algébrico:</h3>
-              <pre id="trace-fatores" class="code-trace"></pre>
+            <div id="status-qualidade-fatores" class="quality-badge" style="display:none;">
+              ✓ Pesagem Analítica em Tolerância ±0,1%
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ABA 3: BALANÇO DE EHL -->
+    <!-- ABA 3: BALANÇO DE EHL & AGITADOR -->
     <section id="tab-ehl" class="tab-pane" style="display: none;">
+      <div class="preset-bar">
+        <span class="preset-label">Desafios Rápidos:</span>
+        <button type="button" class="btn-preset" data-preset="ehl-creme-facial">Loção Facial Óleo Mineral (EHL 10.5)</button>
+        <button type="button" class="btn-preset" data-preset="ehl-cold-cream">Cold Cream Cera Abelha (EHL 9.0)</button>
+        <button type="button" class="btn-preset" data-preset="ehl-pomada">Pomada Hidrofílica O/A (EHL 12.0)</button>
+      </div>
+
       <div class="grid-2">
         <div class="card">
-          <h2 class="card-title">Estabilização de Emulsão</h2>
+          <h2 class="card-title">Planejamento da Emulsão</h2>
           <div id="alert-ehl"></div>
           
           <form id="form-ehl" autocomplete="off">
             <div class="form-group">
-              <label class="form-label" for="ehl-req">EHL Crítico Requerido pela Fase Oleosa</label>
+              <label class="form-label" for="ehl-req">EHL Crítico da Fase Lipofílica</label>
               <input type="number" id="ehl-req" class="form-control" step="0.1" min="1" max="20" value="10.5" required>
             </div>
 
             <div class="form-group">
-              <label class="form-label" for="ehl-massa-total">Massa Total do Par de Tensoativos (g)</label>
-              <input type="number" id="ehl-massa-total" class="form-control" step="0.01" min="0.01" value="5.00" required>
+              <label class="form-label" for="ehl-massa-total">Massa Total de Surfactantes (g)</label>
+              <input type="number" id="ehl-massa-total" class="form-control" step="0.01" min="0.1" value="5.00" required>
             </div>
 
-            <div style="background-color: var(--bg-alt); padding: 12px; border-radius: var(--border-radius-sm); margin-bottom: 16px;">
-              <h3 style="font-size: 0.9rem; margin-bottom: 8px;">Tensoativo A (Maior EHL - Hidrofílico)</h3>
+            <div class="surfactant-card">
+              <span class="surfactant-tag">Surfactante A (Hidrofílico)</span>
               <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 8px;">
-                <input type="text" id="ehl-nome-a" class="form-control" value="Polissorbato 80 (Tween 80)" required>
-                <input type="number" id="ehl-val-a" class="form-control" step="0.1" min="0.1" max="25" value="15.0" required>
+                <input type="text" id="ehl-nome-a" class="form-control" value="Polissorbato 80" required>
+                <input type="number" id="ehl-val-a" class="form-control" step="0.1" min="1" max="25" value="15.0" required>
               </div>
             </div>
 
-            <div style="background-color: var(--bg-alt); padding: 12px; border-radius: var(--border-radius-sm); margin-bottom: 16px;">
-              <h3 style="font-size: 0.9rem; margin-bottom: 8px;">Tensoativo B (Menor EHL - Lipofílico)</h3>
+            <div class="surfactant-card">
+              <span class="surfactant-tag">Surfactante B (Lipofílico)</span>
               <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 8px;">
-                <input type="text" id="ehl-nome-b" class="form-control" value="Monoleato de Sorbitano (Span 80)" required>
-                <input type="number" id="ehl-val-b" class="form-control" step="0.1" min="0.1" max="25" value="4.3" required>
+                <input type="text" id="ehl-nome-b" class="form-control" value="Span 80" required>
+                <input type="number" id="ehl-val-b" class="form-control" step="0.1" min="1" max="25" value="4.3" required>
               </div>
             </div>
 
-            <button type="submit" class="btn btn-primary" style="width: 100%;">Calcular Proporção do Sistema Tensoativo</button>
+            <div class="action-buttons-group">
+              <button type="submit" class="btn btn-primary" id="btn-calcular-ehl">
+                <span>🌀 Calcular & Emulsionar</span>
+              </button>
+              <button type="button" class="btn btn-secondary" id="btn-parar-agitador">Parar Agitação</button>
+            </div>
           </form>
+
+          <div id="box-memorial-ehl" class="step-trace" style="display: none;">
+            <h3 style="font-size: 0.9rem; margin-bottom: 6px;">Balanço Algébrico de Tensoativos:</h3>
+            <pre id="trace-ehl" class="code-trace"></pre>
+          </div>
         </div>
 
-        <div class="card">
-          <h2 class="card-title">Composição do Par Emulsionante</h2>
-          <div id="res-ehl-placeholder" class="placeholder-text">Defina os tensoativos e o EHL desejado para fracionar a mistura.</div>
-          <div id="res-ehl-content" class="calc-result" style="display: none;">
-            <div class="stat-box">
-              <span class="stat-label" id="lbl-ehl-res-a">Tensoativo A:</span>
-              <span class="stat-value" id="val-ehl-res-a">0,00 g (0,0%)</span>
+        <!-- Agitador Magnético e Béquer Interativo -->
+        <div class="card bench-view">
+          <h2 class="card-title">Agitador Magnético & Vórtice</h2>
+          
+          <div class="stirrer-stage">
+            <!-- Béquer com Emulsão e Vórtice -->
+            <div class="beaker-wrapper">
+              <svg class="svg-beaker" viewBox="0 0 140 180" width="140" height="180">
+                <!-- Corpo do Béquer -->
+                <path class="glass-outline" d="M 15,20 L 25,20 L 25,165 Q 25,175 35,175 L 105,175 Q 115,175 115,165 L 115,20 L 125,20" />
+                
+                <clipPath id="beakerClip">
+                  <path d="M 26,20 L 26,165 Q 26,174 35,174 L 105,174 Q 114,174 114,165 L 114,20 Z" />
+                </clipPath>
+                
+                <!-- Emulsão com Vórtice Animado -->
+                <g clip-path="url(#beakerClip)">
+                  <rect id="beaker-liquid" class="liquid-emulsion" x="25" y="70" width="90" height="105"/>
+                  <path id="beaker-vortex" class="liquid-vortex" d="M 25,70 Q 70,70 115,70 L 115,175 L 25,175 Z" fill="#94d2bd"/>
+                  <!-- Gotículas de Emulsão -->
+                  <circle class="emulsion-droplet d1" cx="45" cy="110" r="3" fill="#ffffff" opacity="0"/>
+                  <circle class="emulsion-droplet d2" cx="85" cy="130" r="4" fill="#ffffff" opacity="0"/>
+                  <circle class="emulsion-droplet d3" cx="65" cy="95" r="2.5" fill="#ffffff" opacity="0"/>
+                </g>
+
+                <!-- Barra Magnética ("Peixinho") -->
+                <rect id="stir-bar" class="magnetic-stir-bar" x="55" y="166" width="30" height="6" rx="3" fill="#ffffff" stroke="#333"/>
+              </svg>
             </div>
-            <div class="stat-box">
-              <span class="stat-label" id="lbl-ehl-res-b">Tensoativo B:</span>
-              <span class="stat-value" id="val-ehl-res-b">0,00 g (0,0%)</span>
+
+            <!-- Base do Agitador Aquecedor -->
+            <div class="stirrer-plate">
+              <div class="stirrer-knobs">
+                <div class="knob active" title="Velocidade RPM"></div>
+                <div class="knob" title="Aquecimento °C"></div>
+              </div>
+              <span class="plate-brand">PHARMA-STIRRER 1200 RPM</span>
             </div>
-            <div class="stat-box highlight">
-              <span class="stat-label">EHL Resultante da Blenda:</span>
-              <span class="stat-value" id="val-ehl-blenda">0,00</span>
+          </div>
+
+          <div class="bench-readout">
+            <div class="readout-row">
+              <span id="disp-lbl-surfact-a">Tensoativo A:</span>
+              <strong id="disp-val-surfact-a">0,00 g (0%)</strong>
             </div>
-            <div class="step-trace">
-              <h3 style="font-size: 0.95rem; margin-bottom: 8px;">Resolução do Sistema Linear:</h3>
-              <pre id="trace-ehl" class="code-trace"></pre>
+            <div class="readout-row">
+              <span id="disp-lbl-surfact-b">Tensoativo B:</span>
+              <strong id="disp-val-surfact-b">0,00 g (0%)</strong>
+            </div>
+            <div class="readout-row">
+              <span>EHL Resultante do Sistema:</span>
+              <strong id="disp-ehl-blenda">0,00</strong>
+            </div>
+            <div id="status-qualidade-ehl" class="quality-badge" style="display:none;">
+              ✓ Emulsão Monodispersa Estável (O/A)
             </div>
           </div>
         </div>
@@ -229,10 +374,10 @@
   </main>
 
   <footer class="app-footer">
-    Liga Acadêmica de Farmácia &copy; <span id="lblAno"></span> - Plataforma Aberta de Farmácia Magistral
+    Plataforma Aberta de Farmácia Magistral &copy; <span id="lblAno"></span> - Treinamento Ativo
   </footer>
 
-  <!-- Carregamento Ordenado de Scripts -->
+  <!-- Carregamento Modular de Scripts -->
   <script src="../assets/js/config.js"></script>
   <script src="../assets/js/utils.js"></script>
   <script src="../assets/js/auth.js"></script>
